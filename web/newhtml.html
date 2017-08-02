@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        <title>Google maps</title>
+        <script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBfwHsBdPcMJ7ZHnyIT6a5HRxCx9vZOUDY"
+        type="text/javascript"></script>
+        <script type="text/javascript">
+
+            var map,
+                currentPositionMarker,
+                mapCenter = new google.maps.LatLng(40.700683, -73.925972),
+                map;
+
+            function initializeMap()
+            {
+                map = new google.maps.Map(document.getElementById('map_canvas'), {
+                   zoom: 13,
+                   center: mapCenter,
+                   mapTypeId: google.maps.MapTypeId.ROADMAP
+                 });
+            }
+
+            function locError(error) {
+                // the current position could not be located
+                alert("The current position could not be found!");
+            }
+
+            function setCurrentPosition(pos) {
+                currentPositionMarker = new google.maps.Marker({
+                    map: map,
+                    position: new google.maps.LatLng(
+                        pos.coords.latitude,
+                        pos.coords.longitude
+                    ),
+                    title: "Current Position"
+                });
+                map.panTo(new google.maps.LatLng(
+                        pos.coords.latitude,
+                        pos.coords.longitude
+                    ));
+            }
+
+            function displayAndWatch(position) {
+                // set current position
+                setCurrentPosition(position);
+                // watch position
+                watchCurrentPosition();
+            }
+
+            function watchCurrentPosition() {
+                var positionTimer = navigator.geolocation.watchPosition(
+                    function (position) {
+                        setMarkerPosition(
+                            currentPositionMarker,
+                            position
+                        );
+                    });
+            }
+
+            function setMarkerPosition(marker, position) {
+                marker.setPosition(
+                    new google.maps.LatLng(
+                        position.coords.latitude,
+                        position.coords.longitude)
+                );
+            }
+
+            function initLocationProcedure() {
+                initializeMap();
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(displayAndWatch, locError);
+                } else {
+                    alert("Your browser does not support the Geolocation API");
+                }
+            }
+
+            $(document).ready(function() {
+                initLocationProcedure();
+            });
+
+        </script>
+    </head>
+
+    <body>
+        <div id="map_canvas" style="height:600px;"></div>
+    </body>
+
+</html>

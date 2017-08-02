@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBfwHsBdPcMJ7ZHnyIT6a5HRxCx9vZOUDY"
+  type="text/javascript"></script>
+        <script src="js/jquery.js"></script>
+        <script>
+            "use strict";
+            const source = new EventSource('stream');
+            var latitude;
+            var longitude; 
+            var map;
+            var i = 0;
+            
+            source.onmessage = function (e) {
+                var update = JSON.parse(e.data);
+                    latitude = update.latitude;
+                    longitude = update.longitude;
+              showCurrentLocation();
+            };
+
+            function showCurrentLocation()
+            {
+                
+                console.log(latitude + " " + longitude);
+                var coords = new google.maps.LatLng(latitude, longitude);
+
+                var marker2 = new google.maps.Marker({       
+                position: coords,
+                map: map
+                });
+                marker2.setAnimation(google.maps.Animation.BOUNCE);
+                
+                map.panTo(new google.maps.LatLng(
+                        latitude,
+                        longitude
+                ));
+            }
+			
+            function initializeMap(){
+		var mapCenter = new google.maps.LatLng(7.252353, 80.593318);
+                map = new google.maps.Map(document.getElementById('mapPlaceholder'), {
+                   zoom: 15,
+                   center: mapCenter,
+                   mapTypeId: google.maps.MapTypeId.ROADMAP
+                });
+                
+                var marker = new google.maps.Marker({       
+                position: mapCenter,
+                map: map,
+                label: "Your Location"
+                });
+             }
+			
+            function initLocationProcedure() {
+                initializeMap();
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(showCurrentLocation);
+                } else {
+                    alert("Your browser does not support the Geolocation API");
+                }
+            }
+
+            $(document).ready(function() {
+                initLocationProcedure();
+            });
+            
+            
+        </script>  
+
+        <style>
+            #mapPlaceholder {
+                height: 1000px;
+                width: 1500px;
+            </style>
+        </head>
+
+        <body>
+            <div>
+                <div id="mapPlaceholder"></div>
+            </div>
+        </body>
+
+
+    </html>
